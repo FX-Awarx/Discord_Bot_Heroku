@@ -250,6 +250,38 @@ async def help(ctx):
 
     await ctx.send(embed=embed)
 
+@bot.command()
+async def ping(ctx):
+    await ctx.send("🏓 Pong ! Je suis actif.")
+
+@bot.command()
+async def avatar(ctx):
+    avatar_url = ctx.author.avatar.url if ctx.author.avatar else None
+    if avatar_url:
+        await ctx.send(avatar_url)
+    else:
+        await ctx.send("Tu n'as pas d'avatar Discord.")
+
+@bot.command()
+async def server(ctx):
+    await ctx.send(f"📌 Serveur : **{ctx.guild.name}** | 👥 Membres : {ctx.guild.member_count}")
+
+@bot.command()
+async def say(ctx, *, text: str):
+    await ctx.send(text)
+
+@bot.command()
+async def suggest(ctx, *, idea: str):
+    await ctx.send(f"💡 Suggestion reçue : `{idea}`. Merci {ctx.author.mention} !")
+
+@bot.command()
+async def info(ctx):
+    embed = discord.Embed(title="TrackBot", description="Bot d'alerte crypto personnalisé.", color=0x00ffcc)
+    embed.add_field(name="👨‍💻 Auteur", value="Toi 🙌", inline=True)
+    embed.add_field(name="📋 Commandes", value="Tape `!help` pour tout voir", inline=False)
+    await ctx.send(embed=embed)
+
+
 
 # ========== DÉMARRAGE ============
 keep_alive()
