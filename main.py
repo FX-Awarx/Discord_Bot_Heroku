@@ -210,6 +210,46 @@ async def graph(ctx, crypto: str):
     await ctx.send(file=file)
     buf.close()
 
+@bot.command()
+async def help(ctx):
+    embed = discord.Embed(
+        title="📚 Aide TrackBot",
+        description="Voici toutes les commandes disponibles avec leur usage :",
+        color=0x1abc9c
+    )
+
+    embed.add_field(name="🎯 Commandes Utilisateur", value="""
+`!track <monnaie>` → Commence à suivre une crypto (ex: btc, eth)
+`!untrack <monnaie>` → Arrête de suivre une crypto
+`!mycryptos` → Liste les cryptos que tu suis
+
+`!alert1 <monnaie> <prix>` → Alerte simple par message (niveau 1)
+`!alert2 <monnaie> <prix>` → Alerte avec mention (niveau 2)
+`!alert3 <monnaie> <prix>` → Alerte vocale si activée (niveau 3)
+`!disablealert <monnaie>` → Supprime les alertes sur cette crypto
+
+`!news <monnaie>` → Donne le prix actuel de la crypto
+`!graph <monnaie>` → Affiche un graphique de l’évolution sur 24h
+""", inline=False)
+
+    embed.add_field(name="🔎 Infos", value="""
+`!ping` → Vérifie si le bot est actif
+`!avatar` → Ton avatar
+`!userinfo @membre` → Infos sur un membre
+`!server` → Infos sur le serveur
+`!say <texte>` → Répète ton texte
+`!suggest <idée>` → Propose une idée
+""", inline=False)
+
+    if ctx.author.guild_permissions.administrator:
+        embed.add_field(name="🔐 Admins", value="""
+`!announce <msg>` → Annonce visible par tout le monde
+`!dm @membre <msg>` → Envoie un DM
+""", inline=False)
+
+    await ctx.send(embed=embed)
+
+
 # ========== DÉMARRAGE ============
 keep_alive()
 token = os.environ['TOKEN']
