@@ -271,10 +271,6 @@ async def say(ctx, *, text: str):
     await ctx.send(text)
 
 @bot.command()
-async def suggest(ctx, *, idea: str):
-    await ctx.send(f"💡 Suggestion reçue : `{idea}`. Merci {ctx.author.mention} !")
-
-@bot.command()
 async def info(ctx):
     embed = discord.Embed(title="TrackBot", description="Bot d'alerte crypto personnalisé.", color=0x00ffcc)
     embed.add_field(name="👨‍💻 Auteur", value="Toi 🙌", inline=True)
