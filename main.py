@@ -182,13 +182,13 @@ async def news(ctx, crypto: str):
 
     embed = discord.Embed(
         title=f"📰 Infos sur {crypto.upper()}",
-        description=f"Voici les dernières données disponibles pour {crypto.upper()}.",
+        description=f"Voici les dernières données disponibles pour {crypto.upper()}",
         color=0x3498db
     )
     embed.add_field(name="💰 Prix actuel", value=f"${price:.2f} USD", inline=False)
     embed.set_footer(text="D'autres actualités seront disponibles prochainement.")
-    await ctx.send(embed=embed)Prix actuel : ${price:.2f} USD
-(D'autres actus bientôt disponibles.)")
+    await ctx.send(embed=embed)
+
 
 @bot.command()
 async def graph(ctx, crypto: str):
