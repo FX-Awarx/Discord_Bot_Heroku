@@ -123,8 +123,13 @@ async def alert1(ctx, crypto: str, price: float):
     await ctx.send(f"⚠️ Alerte niveau 1 activée pour {crypto.upper()} < {price}$")
 
     current = get_price(crypto.lower())
-    if current is not None and current <= price:
+    if current is None:
+        await ctx.send("⚠️ Impossible de vérifier le prix actuel. L’alerte est enregistrée.")
+    elif current <= price:
         await ctx.author.send(f"🚨 ALERTE immédiate : {crypto.upper()} est à {current}$ (seuil : {price}$)")
+    else:
+        await ctx.send(f"ℹ️ Prix actuel de {crypto.upper()} : {current}$ — au-dessus du seuil.")
+
 
 @bot.command()
 async def disablealert1(ctx, crypto: str):
@@ -148,8 +153,12 @@ async def alert2(ctx, crypto: str, price: float):
     await ctx.send(f"🔔 Alerte niveau 2 activée pour {crypto.upper()} < {price}$")
 
     current = get_price(crypto.lower())
-    if current is not None and current <= price:
-        await ctx.send(f"🚨 {ctx.author.mention} ALERTE immédiate : {crypto.upper()} est à {current}$ (seuil : {price}$)")
+    if current is None:
+        await ctx.send("⚠️ Impossible de vérifier le prix actuel. L’alerte est enregistrée.")
+    elif current <= price:
+        await ctx.author.send(f"🚨 ALERTE immédiate : {crypto.upper()} est à {current}$ (seuil : {price}$)")
+    else:
+        await ctx.send(f"ℹ️ Prix actuel de {crypto.upper()} : {current}$ — au-dessus du seuil.")
 
 @bot.command()
 async def disablealert2(ctx, crypto: str):
@@ -170,10 +179,14 @@ async def alert3(ctx, crypto: str, price: float):
     save_data()
 
     await ctx.send(f"📞 Alerte niveau 3 activée pour {crypto.upper()} < {price}$")
-
+    
     current = get_price(crypto.lower())
-    if current is not None and current <= price:
-        await ctx.author.send(f"📢 [APPEL SIMULÉ] : {crypto.upper()} est à {current}$ (seuil : {price}$)")
+    if current is None:
+        await ctx.send("⚠️ Impossible de vérifier le prix actuel. L’alerte est enregistrée.")
+    elif current <= price:
+        await ctx.author.send(f"🚨 ALERTE immédiate : {crypto.upper()} est à {current}$ (seuil : {price}$)")
+    else:
+        await ctx.send(f"ℹ️ Prix actuel de {crypto.upper()} : {current}$ — au-dessus du seuil.")
 
 @bot.command()
 async def disablealert3(ctx, crypto: str):
