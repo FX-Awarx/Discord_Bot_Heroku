@@ -157,15 +157,16 @@ async def disablealert(ctx, crypto: str):
 
 # ========== TÂCHE ALERTES ============
 @tasks.loop(seconds=60)
-def check_alerts():
+async def check_alerts():
     for uid, crypto_dict in alerts.items():
-        user = bot.get_user(uid)
+        user = await bot.fetch_user(uid)
         if not user:
             continue
         for crypto, threshold in crypto_dict.items():
             price = get_price(crypto)
             if price is not None and price <= threshold:
-                asyncio.create_task(user.send(f"🚨 {crypto.upper()} est sous {threshold}$ (actuel : {price}$)"))
+                await user.send(f"🚨 {crypto.upper()} est sous {threshold}$ (actuel : {price}$)")
+
 
 @bot.command()
 async def mycryptos(ctx):
@@ -182,12 +183,13 @@ async def news(ctx, crypto: str):
 
     embed = discord.Embed(
         title=f"📰 Infos sur {crypto.upper()}",
-        description=f"Voici les dernières données disponibles pour {crypto.upper()}",
+        description=f"Voici les dernières données disponibles.",
         color=0x3498db
     )
-    embed.add_field(name="💰 Prix actuel", value=f"${price:.2f} USD", inline=False)
+    embed.add_field(name="💰 Prix actuel", value=f"{price:.2f} USD", inline=False)
     embed.set_footer(text="D'autres actualités seront disponibles prochainement.")
     await ctx.send(embed=embed)
+
 
 
 @bot.command()
