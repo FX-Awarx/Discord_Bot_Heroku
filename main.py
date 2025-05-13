@@ -209,15 +209,13 @@ async def dm(ctx, member: discord.Member, *, message):
 
 # ========== TÂCHE ALERTES ============
 @tasks.loop(seconds=60)
-def check_alerts():
+async def check_alerts():
     for uid, crypto_dict in alerts.items():
-        user = bot.get_user(uid)
-        if not user:
-            continue
+        user = await bot.fetch_user(uid)
         for crypto, threshold in crypto_dict.items():
             price = get_price(crypto)
             if price is not None and price <= threshold:
-                asyncio.create_task(user.send(f"🚨 {crypto.upper()} est sous {threshold}$ (actuel : {price}$)"))
+                await user.send(f"🚨 {crypto.upper()} est sous {threshold}$ (actuel : {price}$)")
 
 # ========== DÉMARRAGE ============
 keep_alive()
