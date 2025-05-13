@@ -281,6 +281,45 @@ async def info(ctx):
     embed.add_field(name="📋 Commandes", value="Tape `!help` pour tout voir", inline=False)
     await ctx.send(embed=embed)
 
+@bot.command()
+@commands.has_permissions(administrator=True)
+async def userinfo(ctx, user: discord.User):
+    embed = discord.Embed(title="Infos utilisateur", color=0x00ffaa)
+    embed.set_thumbnail(url=user.avatar.url if user.avatar else None)
+    embed.add_field(name="Nom", value=user.name)
+    embed.add_field(name="ID", value=user.id)
+    embed.add_field(name="Compte créé le", value=user.created_at.strftime('%d %B %Y'))
+    await ctx.send(embed=embed)
+
+@bot.command()
+async def suggest(ctx, *, idea: str):
+    channel = discord.utils.get(ctx.guild.text_channels, name="suggest")
+    if channel is None:
+        await ctx.send("❌ Aucun salon nommé 'suggest' trouvé.")
+        return
+    embed = discord.Embed(title="💡 Nouvelle suggestion", description=idea, color=0xf1c40f)
+    embed.set_footer(text=f"Proposé par {ctx.author} • {ctx.message.created_at.strftime('%d/%m/%Y %H:%M')}")
+    await channel.send(embed=embed)
+    await ctx.send("✅ Suggestion envoyée dans #suggest")
+
+@bot.command()
+@commands.has_permissions(administrator=True)
+async def dm(ctx, member: discord.Member, *, message):
+    try:
+        await member.send(f"📬 Message de l'admin : {message}")
+        await ctx.send("✉️ Message envoyé avec succès.")
+    except:
+        await ctx.send("❌ Impossible d'envoyer le message.")
+
+@bot.command()
+@commands.has_permissions(administrator=True)
+async def announce(ctx, *, msg):
+    for channel in ctx.guild.text_channels:
+        try:
+            await channel.send(f"📢 Annonce : {msg}")
+        except:
+            continue
+
 
 
 # ========== DÉMARRAGE ============
