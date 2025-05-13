@@ -114,12 +114,79 @@ async def start_interaction(member, channel):
         await channel.send("Temps d'attente dépassé. Rejoins plus tard ou contacte un admin si tu as besoin d'aide.")
 
 @bot.command()
-async def alert(ctx, crypto: str, price: float):
+async def alert1(ctx, crypto: str, price: float):
     uid = ctx.author.id
     alerts.setdefault(uid, {})
-    alerts[uid][crypto.lower()] = price
+    alerts[uid][crypto.lower()] = {"level": 1, "threshold": price}
     save_data()
-    await ctx.send(f"⚠️ Alerte active : {crypto.upper()} < {price}$")
+
+    await ctx.send(f"⚠️ Alerte niveau 1 activée pour {crypto.upper()} < {price}$")
+
+    current = get_price(crypto.lower())
+    if current is not None and current <= price:
+        await ctx.author.send(f"🚨 ALERTE immédiate : {crypto.upper()} est à {current}$ (seuil : {price}$)")
+
+@bot.command()
+async def disablealert1(ctx, crypto: str):
+    uid = ctx.author.id
+    if uid in alerts and crypto.lower() in alerts[uid]:
+        if alerts[uid][crypto.lower()].get('level') == 1:
+            del alerts[uid][crypto.lower()]
+            save_data()
+            await ctx.send(f"🛑 Alerte niveau 1 désactivée pour {crypto.upper()}.")
+            return
+    await ctx.send("Aucune alerte niveau 1 active sur cette crypto.")
+
+
+@bot.command()
+async def alert2(ctx, crypto: str, price: float):
+    uid = ctx.author.id
+    alerts.setdefault(uid, {})
+    alerts[uid][crypto.lower()] = {"level": 2, "threshold": price}
+    save_data()
+
+    await ctx.send(f"🔔 Alerte niveau 2 activée pour {crypto.upper()} < {price}$")
+
+    current = get_price(crypto.lower())
+    if current is not None and current <= price:
+        await ctx.send(f"🚨 {ctx.author.mention} ALERTE immédiate : {crypto.upper()} est à {current}$ (seuil : {price}$)")
+
+@bot.command()
+async def disablealert2(ctx, crypto: str):
+    uid = ctx.author.id
+    if uid in alerts and crypto.lower() in alerts[uid]:
+        if alerts[uid][crypto.lower()].get('level') == 2:
+            del alerts[uid][crypto.lower()]
+            save_data()
+            await ctx.send(f"🔕 Alerte niveau 2 désactivée pour {crypto.upper()}.")
+            return
+    await ctx.send("Aucune alerte niveau 2 active sur cette crypto.")
+
+@bot.command()
+async def alert3(ctx, crypto: str, price: float):
+    uid = ctx.author.id
+    alerts.setdefault(uid, {})
+    alerts[uid][crypto.lower()] = {"level": 3, "threshold": price}
+    save_data()
+
+    await ctx.send(f"📞 Alerte niveau 3 activée pour {crypto.upper()} < {price}$")
+
+    current = get_price(crypto.lower())
+    if current is not None and current <= price:
+        await ctx.author.send(f"📢 [APPEL SIMULÉ] : {crypto.upper()} est à {current}$ (seuil : {price}$)")
+
+@bot.command()
+async def disablealert3(ctx, crypto: str):
+    uid = ctx.author.id
+    if uid in alerts and crypto.lower() in alerts[uid]:
+        if alerts[uid][crypto.lower()].get('level') == 3:
+            del alerts[uid][crypto.lower()]
+            save_data()
+            await ctx.send(f"📴 Alerte niveau 3 désactivée pour {crypto.upper()}.")
+            return
+    await ctx.send("Aucune alerte niveau 3 active sur cette crypto.")
+
+
 
 @bot.command()
 async def track(ctx, crypto: str):
@@ -146,27 +213,36 @@ async def untrack(ctx, crypto: str):
     else:
         await ctx.send("Tu ne suis pas cette crypto.")
 
-@bot.command()
-async def disablealert(ctx, crypto: str):
-    uid = ctx.author.id
-    if uid in alerts and crypto.lower() in alerts[uid]:
-        del alerts[uid][crypto.lower()]
-        save_data()
-        await ctx.send(f"🚫 Alerte sur {crypto.upper()} désactivée.")
-    else:
-        await ctx.send("Aucune alerte active sur cette crypto.")
-
 # ========== TÂCHE ALERTES ============
-@tasks.loop(seconds=60)
+@tasks.loop(minutes=5)
 async def check_alerts():
+    if not hasattr(check_alerts, "last_sent"):
+        check_alerts.last_sent = {}
+
     for uid, crypto_dict in alerts.items():
         user = await bot.fetch_user(uid)
         if not user:
             continue
-        for crypto, threshold in crypto_dict.items():
+
+        for crypto, config in crypto_dict.items():
+            level = config.get("level")
+            threshold = config.get("threshold")
             price = get_price(crypto)
+
             if price is not None and price <= threshold:
-                await user.send(f"🚨 {crypto.upper()} est sous {threshold}$ (actuel : {price}$)")
+                key = f"{uid}_{crypto}"
+                now = asyncio.get_event_loop().time()
+                last_time = check_alerts.last_sent.get(key, 0)
+
+                if now - last_time >= 3600:  # relancer seulement 1 fois/h
+                    if level == 1:
+                        await user.send(f"🔔 Alerte NIVEAU 1 : {crypto.upper()} est sous {threshold}$ → {price}$")
+                    elif level == 2:
+                        await user.send(f"🚨 Alerte NIVEAU 2 : {crypto.upper()} est sous {threshold}$ → {price}$")
+                    elif level == 3:
+                        await user.send(f"📞 Alerte NIVEAU 3 (appel simulé) : {crypto.upper()} à {price}$")
+
+                    check_alerts.last_sent[key] = now
 
 
 @bot.command()
@@ -224,13 +300,16 @@ async def help(ctx):
 `!untrack <monnaie>` → Arrête de suivre une crypto
 `!mycryptos` → Liste les cryptos que tu suis
 
-`!alert1 <monnaie> <prix>` → Alerte simple par message (niveau 1)
+`!alert1 <monnaie> <prix>` → Alerte par message (niveau 1)
 `!alert2 <monnaie> <prix>` → Alerte avec mention (niveau 2)
-`!alert3 <monnaie> <prix>` → Alerte vocale si activée (niveau 3)
-`!disablealert <monnaie>` → Supprime les alertes sur cette crypto
+`!alert3 <monnaie> <prix>` → Alerte vocale (niveau 3, si activée)
 
-`!news <monnaie>` → Donne le prix actuel de la crypto
-`!graph <monnaie>` → Affiche un graphique de l’évolution sur 24h
+`!disablealert1 <monnaie>` → Supprime uniquement l'alerte niveau 1
+`!disablealert2 <monnaie>` → Supprime uniquement l'alerte niveau 2
+`!disablealert3 <monnaie>` → Supprime uniquement l'alerte niveau 3
+
+`!news <monnaie>` → Donne le prix actuel
+`!graph <monnaie>` → Affiche un graphique 24h
 """, inline=False)
 
     embed.add_field(name="🔎 Infos", value="""
@@ -238,17 +317,18 @@ async def help(ctx):
 `!avatar` → Ton avatar
 `!userinfo @membre` → Infos sur un membre
 `!server` → Infos sur le serveur
-`!say <texte>` → Répète ton texte
+`!say <texte>` → Le bot répète ton message
 `!suggest <idée>` → Propose une idée
 """, inline=False)
 
     if ctx.author.guild_permissions.administrator:
         embed.add_field(name="🔐 Admins", value="""
-`!announce <msg>` → Annonce visible par tout le monde
-`!dm @membre <msg>` → Envoie un DM
+`!announce <message>` → Annonce globale dans tous les salons
+`!dm @membre <message>` → Envoie un DM personnalisé
 """, inline=False)
 
     await ctx.send(embed=embed)
+
 
 @bot.command()
 async def ping(ctx):
