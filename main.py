@@ -120,15 +120,19 @@ async def alert1(ctx, crypto: str, price: float):
     alerts[uid][crypto.lower()] = {"level": 1, "threshold": price}
     save_data()
 
-    await ctx.send(f"⚠️ Alerte niveau 1 activée pour {crypto.upper()} < {price}$")
+    await ctx.send(f"✅ Alerte NIVEAU 1 enregistrée pour {crypto.upper()} si le prix descend sous {price}$.")
 
     current = get_price(crypto.lower())
     if current is None:
-        await ctx.send("⚠️ Impossible de vérifier le prix actuel. L’alerte est enregistrée.")
+        await ctx.send("⚠️ Impossible de vérifier le prix actuel. L’alerte est bien enregistrée.")
     elif current <= price:
-        await ctx.author.send(f"🚨 ALERTE immédiate : {crypto.upper()} est à {current}$ (seuil : {price}$)")
+        await ctx.author.send(
+            f"🚨 ALERTE immédiate (niveau 1) : {crypto.upper()} est à {current}$ (seuil : {price}$)"
+        )
     else:
-        await ctx.send(f"ℹ️ Prix actuel de {crypto.upper()} : {current}$ — au-dessus du seuil.")
+        await ctx.send(
+            f"ℹ️ Le prix actuel de {crypto.upper()} est {current}$, donc aucun signal pour le moment."
+        )
 
 
 @bot.command()
@@ -150,15 +154,20 @@ async def alert2(ctx, crypto: str, price: float):
     alerts[uid][crypto.lower()] = {"level": 2, "threshold": price}
     save_data()
 
-    await ctx.send(f"🔔 Alerte niveau 2 activée pour {crypto.upper()} < {price}$")
+    await ctx.send(f"✅ Alerte NIVEAU 2 enregistrée pour {crypto.upper()} si le prix descend sous {price}$.")
 
     current = get_price(crypto.lower())
     if current is None:
-        await ctx.send("⚠️ Impossible de vérifier le prix actuel. L’alerte est enregistrée.")
+        await ctx.send("⚠️ Impossible de vérifier le prix actuel. L’alerte est bien enregistrée.")
     elif current <= price:
-        await ctx.author.send(f"🚨 ALERTE immédiate : {crypto.upper()} est à {current}$ (seuil : {price}$)")
+        await ctx.send(
+            f"🚨 {ctx.author.mention} ALERTE immédiate (NIVEAU 2) : {crypto.upper()} est à {current}$ (seuil : {price}$)"
+        )
     else:
-        await ctx.send(f"ℹ️ Prix actuel de {crypto.upper()} : {current}$ — au-dessus du seuil.")
+        await ctx.send(
+            f"ℹ️ Le prix actuel de {crypto.upper()} est {current}$ — au-dessus du seuil."
+        )
+
 
 @bot.command()
 async def disablealert2(ctx, crypto: str):
@@ -178,15 +187,20 @@ async def alert3(ctx, crypto: str, price: float):
     alerts[uid][crypto.lower()] = {"level": 3, "threshold": price}
     save_data()
 
-    await ctx.send(f"📞 Alerte niveau 3 activée pour {crypto.upper()} < {price}$")
-    
+    await ctx.send(f"✅ Alerte NIVEAU 3 enregistrée pour {crypto.upper()} si le prix descend sous {price}$.")
+
     current = get_price(crypto.lower())
     if current is None:
-        await ctx.send("⚠️ Impossible de vérifier le prix actuel. L’alerte est enregistrée.")
+        await ctx.send("⚠️ Impossible de vérifier le prix actuel. L’alerte est bien enregistrée.")
     elif current <= price:
-        await ctx.author.send(f"🚨 ALERTE immédiate : {crypto.upper()} est à {current}$ (seuil : {price}$)")
+        await ctx.author.send(
+            f"📞 [APPEL SIMULÉ] ALERTE NIVEAU 3 : {crypto.upper()} est à {current}$ (seuil : {price}$)"
+        )
     else:
-        await ctx.send(f"ℹ️ Prix actuel de {crypto.upper()} : {current}$ — au-dessus du seuil.")
+        await ctx.send(
+            f"ℹ️ Le prix actuel de {crypto.upper()} est {current}$ — au-dessus du seuil."
+        )
+
 
 @bot.command()
 async def disablealert3(ctx, crypto: str):
