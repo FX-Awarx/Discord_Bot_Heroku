@@ -100,7 +100,7 @@ async def start_interaction(member, channel):
 
         await channel.send("Parfait. Pour {0}, à partir de quel prix veux-tu êtreé ? (USD)".format(msg1.content.upper()))
         msg3 = await bot.wait_for('message', check=check, timeout=60)
-       s[member.id] = {msg1.content.lower(): float(msg3.content)}
+        s[member.id] = {msg1.content.lower(): float(msg3.content)}
         save_data()
 
         await channel.send("Merci ! Tu es maintenant vérifié. Profite du serveur !")
