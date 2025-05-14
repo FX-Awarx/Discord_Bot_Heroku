@@ -1,4 +1,4 @@
-import discord
+        import discord
 import os
 import asyncio
 import requests
@@ -114,7 +114,7 @@ async def start_interaction(member, channel):
         await channel.send("Temps d'attente dépassé. Rejoins plus tard ou contacte un admin si tu as besoin d'aide.")
 
 @bot.command()
-async def(ctx, crypto: str, price: float):
+async def alert1(ctx, crypto: str, price: float):
     uid = ctx.author.id
     crypto = crypto.lower()
    s.setdefault(uid, {})
@@ -146,7 +146,7 @@ async def disablealert1(ctx, crypto: str):
 
 
 @bot.command()
-async def2(ctx, crypto: str, price: float):
+async def alert2(ctx, crypto: str, price: float):
     uid = ctx.author.id
     crypto = crypto.lower()
    s.setdefault(uid, {})
@@ -177,7 +177,7 @@ async def disablealert2(ctx, crypto: str):
     await ctx.send("Aucunee niveau 2 active sur cette crypto.")
 
 @bot.command()
-async def3(ctx, crypto: str, price: float):
+async def alert3(ctx, crypto: str, price: float):
     uid = ctx.author.id
     crypto = crypto.lower()
    s.setdefault(uid, {})
