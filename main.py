@@ -116,23 +116,21 @@ async def start_interaction(member, channel):
 @bot.command()
 async def alert1(ctx, crypto: str, price: float):
     uid = ctx.author.id
+    crypto = crypto.lower()
     alerts.setdefault(uid, {})
-    alerts[uid][crypto.lower()] = {"level": 1, "threshold": price}
+    alerts[uid].setdefault(crypto, {})
+    alerts[uid][crypto]["1"] = price
     save_data()
 
     await ctx.send(f"✅ Alerte NIVEAU 1 enregistrée pour {crypto.upper()} si le prix descend sous {price}$.")
 
-    current = get_price(crypto.lower())
+    current = get_price(crypto)
     if current is None:
-        await ctx.send("⚠️ Impossible de vérifier le prix actuel. L’alerte est bien enregistrée.")
+        await ctx.send("⚠️ Impossible de vérifier le prix actuel.")
     elif current <= price:
-        await ctx.author.send(
-            f"🚨 ALERTE immédiate (niveau 1) : {crypto.upper()} est à {current}$ (seuil : {price}$)"
-        )
+        await ctx.author.send(f"🚨 Alerte immédiate (niveau 1) : {crypto.upper()} est à {current}$ (seuil : {price}$)")
     else:
-        await ctx.send(
-            f"ℹ️ Le prix actuel de {crypto.upper()} est {current}$, donc aucun signal pour le moment."
-        )
+        await ctx.send(f"ℹ️ Prix actuel de {crypto.upper()} : {current}$ — aucun signal.")
 
 
 @bot.command()
@@ -150,23 +148,21 @@ async def disablealert1(ctx, crypto: str):
 @bot.command()
 async def alert2(ctx, crypto: str, price: float):
     uid = ctx.author.id
+    crypto = crypto.lower()
     alerts.setdefault(uid, {})
-    alerts[uid][crypto.lower()] = {"level": 2, "threshold": price}
+    alerts[uid].setdefault(crypto, {})
+    alerts[uid][crypto]["2"] = price
     save_data()
 
     await ctx.send(f"✅ Alerte NIVEAU 2 enregistrée pour {crypto.upper()} si le prix descend sous {price}$.")
 
-    current = get_price(crypto.lower())
+    current = get_price(crypto)
     if current is None:
-        await ctx.send("⚠️ Impossible de vérifier le prix actuel. L’alerte est bien enregistrée.")
+        await ctx.send("⚠️ Impossible de vérifier le prix actuel.")
     elif current <= price:
-        await ctx.send(
-            f"🚨 {ctx.author.mention} ALERTE immédiate (NIVEAU 2) : {crypto.upper()} est à {current}$ (seuil : {price}$)"
-        )
+        await ctx.send(f"🚨 {ctx.author.mention} Alerte immédiate (niveau 2) : {crypto.upper()} est à {current}$")
     else:
-        await ctx.send(
-            f"ℹ️ Le prix actuel de {crypto.upper()} est {current}$ — au-dessus du seuil."
-        )
+        await ctx.send(f"ℹ️ Prix actuel de {crypto.upper()} : {current}$ — aucun signal.")
 
 
 @bot.command()
@@ -183,23 +179,21 @@ async def disablealert2(ctx, crypto: str):
 @bot.command()
 async def alert3(ctx, crypto: str, price: float):
     uid = ctx.author.id
+    crypto = crypto.lower()
     alerts.setdefault(uid, {})
-    alerts[uid][crypto.lower()] = {"level": 3, "threshold": price}
+    alerts[uid].setdefault(crypto, {})
+    alerts[uid][crypto]["3"] = price
     save_data()
 
     await ctx.send(f"✅ Alerte NIVEAU 3 enregistrée pour {crypto.upper()} si le prix descend sous {price}$.")
 
-    current = get_price(crypto.lower())
+    current = get_price(crypto)
     if current is None:
-        await ctx.send("⚠️ Impossible de vérifier le prix actuel. L’alerte est bien enregistrée.")
+        await ctx.send("⚠️ Impossible de vérifier le prix actuel.")
     elif current <= price:
-        await ctx.author.send(
-            f"📞 [APPEL SIMULÉ] ALERTE NIVEAU 3 : {crypto.upper()} est à {current}$ (seuil : {price}$)"
-        )
+        await play_alert_audio(ctx)
     else:
-        await ctx.send(
-            f"ℹ️ Le prix actuel de {crypto.upper()} est {current}$ — au-dessus du seuil."
-        )
+        await ctx.send(f"ℹ️ Prix actuel de {crypto.upper()} : {current}$ — aucun signal.")
 
 
 @bot.command()
@@ -422,6 +416,28 @@ async def announce(ctx, *, msg):
             await channel.send(f"📢 Annonce : {msg}")
         except:
             continue
+
+async def play_alert_audio(ctx):
+    voice_channel = discord.utils.get(ctx.guild.voice_channels, name="🔊 alert")  # nom exact du salon vocal
+    if voice_channel is None:
+        await ctx.send("❌ Aucun salon vocal nommé '🔊 alert' trouvé.")
+        return
+
+    if ctx.voice_client:
+        await ctx.voice_client.disconnect()
+
+    vc = await voice_channel.connect()
+
+    if not os.path.isfile("alert.mp3"):
+        await ctx.send("❌ Fichier audio 'alert.mp3' non trouvé.")
+        await vc.disconnect()
+        return
+
+    vc.play(discord.FFmpegPCMAudio("alert.mp3"))
+    while vc.is_playing():
+        await asyncio.sleep(1)
+
+    await vc.disconnect()
 
 
 
