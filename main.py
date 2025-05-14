@@ -114,7 +114,7 @@ async def start_interaction(member, channel):
         await channel.send("Temps d'attente dépassé. Rejoins plus tard ou contacte un admin si tu as besoin d'aide.")
 
 @bot.command()
-async def1(ctx, crypto: str, price: float):
+async def(ctx, crypto: str, price: float):
     uid = ctx.author.id
     crypto = crypto.lower()
    s.setdefault(uid, {})
