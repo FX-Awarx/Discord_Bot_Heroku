@@ -98,9 +98,9 @@ async def start_interaction(member, channel):
             tracked_cryptos[member.id].append(msg2.content.lower())
             save_data()
 
-        await channel.send("Parfait. Pour {0}, à partir de quel prix veux-tu être alerté ? (USD)".format(msg1.content.upper()))
+        await channel.send("Parfait. Pour {0}, à partir de quel prix veux-tu êtreé ? (USD)".format(msg1.content.upper()))
         msg3 = await bot.wait_for('message', check=check, timeout=60)
-        alerts[member.id] = {msg1.content.lower(): float(msg3.content)}
+       s[member.id] = {msg1.content.lower(): float(msg3.content)}
         save_data()
 
         await channel.send("Merci ! Tu es maintenant vérifié. Profite du serveur !")
@@ -114,21 +114,21 @@ async def start_interaction(member, channel):
         await channel.send("Temps d'attente dépassé. Rejoins plus tard ou contacte un admin si tu as besoin d'aide.")
 
 @bot.command()
-async def alert1(ctx, crypto: str, price: float):
+async def1(ctx, crypto: str, price: float):
     uid = ctx.author.id
     crypto = crypto.lower()
-    alerts.setdefault(uid, {})
-    alerts[uid].setdefault(crypto, {})
-    alerts[uid][crypto]["1"] = price
+   s.setdefault(uid, {})
+   s[uid].setdefault(crypto, {})
+   s[uid][crypto]["1"] = price
     save_data()
 
-    await ctx.send(f"✅ Alerte NIVEAU 1 enregistrée pour {crypto.upper()} si le prix descend sous {price}$.")
+    await ctx.send(f"✅e NIVEAU 1 enregistrée pour {crypto.upper()} si le prix descend sous {price}$.")
 
     current = get_price(crypto)
     if current is None:
         await ctx.send("⚠️ Impossible de vérifier le prix actuel.")
     elif current <= price:
-        await ctx.author.send(f"🚨 Alerte immédiate (niveau 1) : {crypto.upper()} est à {current}$ (seuil : {price}$)")
+        await ctx.author.send(f"🚨e immédiate (niveau 1) : {crypto.upper()} est à {current}$ (seuil : {price}$)")
     else:
         await ctx.send(f"ℹ️ Prix actuel de {crypto.upper()} : {current}$ — aucun signal.")
 
@@ -136,31 +136,31 @@ async def alert1(ctx, crypto: str, price: float):
 @bot.command()
 async def disablealert1(ctx, crypto: str):
     uid = ctx.author.id
-    if uid in alerts and crypto.lower() in alerts[uid]:
-        if alerts[uid][crypto.lower()].get('level') == 1:
-            del alerts[uid][crypto.lower()]
+    if uid ins and crypto.lower() ins[uid]:
+        ifs[uid][crypto.lower()].get('level') == 1:
+            dels[uid][crypto.lower()]
             save_data()
-            await ctx.send(f"🛑 Alerte niveau 1 désactivée pour {crypto.upper()}.")
+            await ctx.send(f"🛑e niveau 1 désactivée pour {crypto.upper()}.")
             return
-    await ctx.send("Aucune alerte niveau 1 active sur cette crypto.")
+    await ctx.send("Aucunee niveau 1 active sur cette crypto.")
 
 
 @bot.command()
-async def alert2(ctx, crypto: str, price: float):
+async def2(ctx, crypto: str, price: float):
     uid = ctx.author.id
     crypto = crypto.lower()
-    alerts.setdefault(uid, {})
-    alerts[uid].setdefault(crypto, {})
-    alerts[uid][crypto]["2"] = price
+   s.setdefault(uid, {})
+   s[uid].setdefault(crypto, {})
+   s[uid][crypto]["2"] = price
     save_data()
 
-    await ctx.send(f"✅ Alerte NIVEAU 2 enregistrée pour {crypto.upper()} si le prix descend sous {price}$.")
+    await ctx.send(f"✅e NIVEAU 2 enregistrée pour {crypto.upper()} si le prix descend sous {price}$.")
 
     current = get_price(crypto)
     if current is None:
         await ctx.send("⚠️ Impossible de vérifier le prix actuel.")
     elif current <= price:
-        await ctx.send(f"🚨 {ctx.author.mention} Alerte immédiate (niveau 2) : {crypto.upper()} est à {current}$")
+        await ctx.send(f"🚨 {ctx.author.mention}e immédiate (niveau 2) : {crypto.upper()} est à {current}$")
     else:
         await ctx.send(f"ℹ️ Prix actuel de {crypto.upper()} : {current}$ — aucun signal.")
 
@@ -168,24 +168,24 @@ async def alert2(ctx, crypto: str, price: float):
 @bot.command()
 async def disablealert2(ctx, crypto: str):
     uid = ctx.author.id
-    if uid in alerts and crypto.lower() in alerts[uid]:
-        if alerts[uid][crypto.lower()].get('level') == 2:
-            del alerts[uid][crypto.lower()]
+    if uid ins and crypto.lower() ins[uid]:
+        ifs[uid][crypto.lower()].get('level') == 2:
+            dels[uid][crypto.lower()]
             save_data()
-            await ctx.send(f"🔕 Alerte niveau 2 désactivée pour {crypto.upper()}.")
+            await ctx.send(f"🔕e niveau 2 désactivée pour {crypto.upper()}.")
             return
-    await ctx.send("Aucune alerte niveau 2 active sur cette crypto.")
+    await ctx.send("Aucunee niveau 2 active sur cette crypto.")
 
 @bot.command()
-async def alert3(ctx, crypto: str, price: float):
+async def3(ctx, crypto: str, price: float):
     uid = ctx.author.id
     crypto = crypto.lower()
-    alerts.setdefault(uid, {})
-    alerts[uid].setdefault(crypto, {})
-    alerts[uid][crypto]["3"] = price
+   s.setdefault(uid, {})
+   s[uid].setdefault(crypto, {})
+   s[uid][crypto]["3"] = price
     save_data()
 
-    await ctx.send(f"✅ Alerte NIVEAU 3 enregistrée pour {crypto.upper()} si le prix descend sous {price}$.")
+    await ctx.send(f"✅e NIVEAU 3 enregistrée pour {crypto.upper()} si le prix descend sous {price}$.")
 
     current = get_price(crypto)
     if current is None:
@@ -199,13 +199,13 @@ async def alert3(ctx, crypto: str, price: float):
 @bot.command()
 async def disablealert3(ctx, crypto: str):
     uid = ctx.author.id
-    if uid in alerts and crypto.lower() in alerts[uid]:
-        if alerts[uid][crypto.lower()].get('level') == 3:
-            del alerts[uid][crypto.lower()]
+    if uid ins and crypto.lower() ins[uid]:
+        ifs[uid][crypto.lower()].get('level') == 3:
+            dels[uid][crypto.lower()]
             save_data()
-            await ctx.send(f"📴 Alerte niveau 3 désactivée pour {crypto.upper()}.")
+            await ctx.send(f"📴e niveau 3 désactivée pour {crypto.upper()}.")
             return
-    await ctx.send("Aucune alerte niveau 3 active sur cette crypto.")
+    await ctx.send("Aucunee niveau 3 active sur cette crypto.")
 
 
 
@@ -228,7 +228,7 @@ async def untrack(ctx, crypto: str):
     uid = ctx.author.id
     if uid in tracked_cryptos and crypto.lower() in tracked_cryptos[uid]:
         tracked_cryptos[uid].remove(crypto.lower())
-        alerts.get(uid, {}).pop(crypto.lower(), None)
+       s.get(uid, {}).pop(crypto.lower(), None)
         save_data()
         await ctx.send(f"❌ Tu ne suis plus {crypto.upper()}")
     else:
@@ -418,7 +418,7 @@ async def announce(ctx, *, msg):
             continue
 
 async def play_alert_audio(ctx):
-    voice_channel = discord.utils.get(ctx.guild.voice_channels, name="🔊 alert")  # nom exact du salon vocal
+    voice_channel = discord.utils.get(ctx.guild.voice_channels, name="alert")  # nom exact du salon vocal
     if voice_channel is None:
         await ctx.send("❌ Aucun salon vocal nommé '🔊 alert' trouvé.")
         return
