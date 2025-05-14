@@ -1,4 +1,6 @@
-discord.py
+discord.py[voice]
 requests
 matplotlib
+aiohttp
+ffmpeg-python
 flask
