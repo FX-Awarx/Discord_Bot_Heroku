@@ -188,9 +188,53 @@ async def alert3(ctx, crypto: str, price: float):
     if current is None:
         await ctx.send("⚠️ Impossible de vérifier le prix actuel.")
     elif current <= price:
-        await play_alert_audio(ctx)
+        guild = ctx.guild
+        overwrites = {
+            guild.default_role: discord.PermissionOverwrite(read_messages=False),
+            ctx.author: discord.PermissionOverwrite(read_messages=True),
+            guild.me: discord.PermissionOverwrite(read_messages=True)
+        }
+        alert_channel = await guild.create_text_channel(f"alerte-max-{ctx.author.name}", overwrites=overwrites)
+
+        # Préparer un embed d'alerte
+        embed = discord.Embed(
+            title="🚨 ALERTE NIVEAU 3 - URGENCE CRYPTO 🚨",
+            description=f"**{crypto.upper()}** est tombé à **{current}$**",
+            color=0xff0000
+        )
+        embed.add_field(name="🔻 Seuil défini", value=f"{price}$", inline=True)
+        embed.add_field(name="📈 Crypto suivie", value=crypto.upper(), inline=True)
+        embed.set_footer(text="TrackBot - Alerte critique")
+
+        await alert_channel.send(content=f"{ctx.author.mention}", embed=embed)
+
+        # Graphique (optionnel)
+        data = get_price_history(crypto)
+        if data:
+            import matplotlib.pyplot as plt
+            import io
+            plt.figure()
+            plt.plot(data, color='red')
+            plt.title(f"Évolution de {crypto.upper()} (24h)")
+            plt.xlabel("Temps")
+            plt.ylabel("Prix (USD)")
+            buf = io.BytesIO()
+            plt.savefig(buf, format='png')
+            buf.seek(0)
+            file = discord.File(fp=buf, filename='graph.png')
+            await alert_channel.send(file=file)
+            buf.close()
+
+        # Audio (si dispo)
+        if os.path.exists("alert.mp3"):
+            await alert_channel.send(file=discord.File("alert.mp3"))
+
+        # Supprimer le salon après 5 minutes
+        await asyncio.sleep(300)
+        await alert_channel.delete()
     else:
         await ctx.send(f"ℹ️ Prix actuel de {crypto.upper()} : {current}$ — aucun signal.")
+
 
 @bot.command()
 async def disablealert3(ctx, crypto: str):
