@@ -263,12 +263,14 @@ async def disablealert3(ctx, crypto: str):
         await ctx.send("Aucune alerte niveau 3 active sur cette crypto.")
 
 
+LIMIT_FREE = 3  # ou ce que tu veux
+
 @bot.command()
 async def track(ctx, crypto: str):
     uid = ctx.author.id
     tracked_cryptos.setdefault(uid, [])
-    if len(tracked_cryptos[uid]) >= 2:
-        await ctx.send("Tu ne peux suivre que 2 cryptos maximum (version gratuite).")
+    if len(tracked_cryptos[uid]) >= LIMIT_FREE:
+        await ctx.send("🚫 Tu as atteint la limite gratuite de suivi (3 cryptos). Tape `!premium` pour plus.")
         return
     if crypto.lower() not in tracked_cryptos[uid]:
         tracked_cryptos[uid].append(crypto.lower())
@@ -493,6 +495,21 @@ async def play_alert_audio(ctx):
         await asyncio.sleep(1)
 
     await vc.disconnect()
+
+@bot.command()
+async def premium(ctx):
+    embed = discord.Embed(
+        title="🌟 TrackBot Premium",
+        description="Voici les avantages du mode Premium 🚀",
+        color=0xffd700
+    )
+    embed.add_field(name="Limites levées", value="➡️ Suivi de + de 3 cryptos", inline=False)
+    embed.add_field(name="Alertes illimitées", value="➡️ Plus de niveaux d’alerte", inline=False)
+    embed.add_field(name="Accès prioritaire", value="➡️ Réduction du délai d’alerte", inline=False)
+    embed.add_field(name="📌 Devenir Premium", value="Clique ici : [Lien d'affiliation](https://www.google.com)", inline=False)
+
+    await ctx.send(embed=embed)
+
 
 
 
