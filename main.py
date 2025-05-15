@@ -235,6 +235,21 @@ async def alert3(ctx, crypto: str, price: float):
     else:
         await ctx.send(f"ℹ️ Prix actuel de {crypto.upper()} : {current}$ — aucun signal.")
 
+@bot.command()
+async def myalerts(ctx):
+    uid = ctx.author.id
+    user_alerts = alerts.get(uid, {})
+    if not user_alerts:
+        await ctx.send("🔕 Tu n'as aucune alerte active.")
+        return
+
+    embed = discord.Embed(title="📋 Tes alertes actives", color=0x00ffcc)
+    for crypto, levels in user_alerts.items():
+        for level, price in levels.items():
+            embed.add_field(name=f"{crypto.upper()} - Niveau {level}", value=f"Seuil : {price}$", inline=False)
+
+    await ctx.send(embed=embed)
+
 
 @bot.command()
 async def disablealert3(ctx, crypto: str):
@@ -359,10 +374,11 @@ async def help(ctx):
 `!track <monnaie>` → Commence à suivre une crypto (ex: btc, eth)
 `!untrack <monnaie>` → Arrête de suivre une crypto
 `!mycryptos` → Liste les cryptos que tu suis
+`!myalerts` → Affiche toutes tes alertes actives
 
 `!alert1 <monnaie> <prix>` → Alerte par message (niveau 1)
 `!alert2 <monnaie> <prix>` → Alerte avec mention (niveau 2)
-`!alert3 <monnaie> <prix>` → Alerte vocale (niveau 3, si activée)
+`!alert3 <monnaie> <prix>` → Alerte urgente avec salon spécial (niveau 3)
 
 `!disablealert1 <monnaie>` → Supprime uniquement l'alerte niveau 1
 `!disablealert2 <monnaie>` → Supprime uniquement l'alerte niveau 2
