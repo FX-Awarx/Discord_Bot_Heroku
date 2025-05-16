@@ -388,6 +388,7 @@ async def help(ctx):
 
 `!news <monnaie>` → Donne le prix actuel
 `!graph <monnaie>` → Affiche un graphique 24h
+`!premium` → Acceder au lien d affiliation
 """, inline=False)
 
     embed.add_field(name="🔎 Infos", value="""
