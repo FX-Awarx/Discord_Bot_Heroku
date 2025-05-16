@@ -4,3 +4,6 @@ matplotlib
 aiohttp
 ffmpeg-python
 flask
+flask_sqlalchemy
+flask_discord
+gunicorn
