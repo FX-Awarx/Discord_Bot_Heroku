@@ -6,7 +6,6 @@ from discord.ext import commands, tasks
 import matplotlib.pyplot as plt
 import io
 import json
-from keep_alive import keep_alive
 
 intents = discord.Intents.default()
 intents.members = True
@@ -515,6 +514,6 @@ async def premium(ctx):
 
 
 # ========== DÉMARRAGE ============
-keep_alive()
 token = os.environ['TOKEN']
 bot.run(token)
+
